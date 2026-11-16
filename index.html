@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700;800&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-/* Layout: one navy column like the slides; two talk cards, then contact + QR */
+/* Layout: one navy column like the slides; two talk cards, then contact */
 :root{
   --bg:#17233F; --panel:#22315A; --line:#34466F; --fg:#FBFBF8; --muted:#C9D3E6; --dim:#8C9AB8; --accent:#E0B39E; --ok:#79C8A0;
   --display:'Raleway','Segoe UI',Arial,sans-serif; --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
@@ -33,21 +33,12 @@ h1{font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1.05;margin:0;text
 .btn[aria-disabled="true"],.btn[disabled]{opacity:.5;cursor:default;pointer-events:none}
 .status{font-size:14px;color:var(--dim)}
 .status.ready{color:var(--ok)}
-.contact{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;padding-block:32px 48px;border-top:1px solid var(--line)}
+.contact{display:grid;grid-template-columns:1fr;gap:28px;align-items:center;padding-block:32px 48px;border-top:1px solid var(--line)}
 .contact h3{font-weight:800;font-size:24px;margin:0 0 16px}
 .links{display:flex;flex-wrap:wrap;gap:10px}
 .mail{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px;font-family:var(--mono);font-size:15px}
 .mail code{user-select:all;background:var(--panel);padding:8px 12px;border-radius:10px}
-.qr{background:#FFFFFF;border-radius:16px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;width:200px}
-.qr div{width:172px;height:172px}
-.qr svg{width:100%;height:100%;display:block}
-.qr small{color:#17233F;font:700 12px var(--mono);letter-spacing:.08em;text-transform:uppercase}
 footer{font-size:13px;color:var(--dim);padding-block:0 32px}
-.stage{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;z-index:20;padding:24px 16px;text-align:center}
-.stage .big{background:#FFFFFF;border-radius:24px;padding:24px;width:min(70vmin,520px);aspect-ratio:1;max-width:100%;box-sizing:border-box}
-.stage .big svg{width:100%;height:100%;display:block}
-.stage h2{font-weight:800;font-size:clamp(24px,4vw,40px);margin:0}
-.stage p{margin:0;color:var(--muted)}
 [hidden]{display:none!important}
 @media (max-width:640px){.contact{grid-template-columns:1fr}}
 </style>
@@ -78,25 +69,15 @@ footer{font-size:13px;color:var(--dim);padding-block:0 32px}
       <h3>Contact information</h3>
       <div class="links">
         <a class="btn primary" id="linkedin" target="_blank" rel="noopener">Connect on LinkedIn</a>
-        <button class="btn ghost" id="present" type="button">Show QR full screen</button>
       </div>
       <div class="mail"><code id="email"></code><button class="btn ghost" id="copy" type="button">Copy email</button></div>
     </div>
-    <div class="qr"><div id="qr-small" role="img" aria-label="QR code linking to this page"></div><small>Scan for slides</small></div>
   </section>
 </div>
 
-<div class="stage" id="stage" hidden>
-  <div class="big" id="qr-big" role="img" aria-label="QR code linking to this page"></div>
-  <h2>Scan for the slides</h2>
-  <p>Tap anywhere to close</p>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
 /* ===== Edit these ===== */
 const CONFIG = {
-  pageUrl: location.href.split("#")[0],
   linkedin: "https://www.linkedin.com/in/tomer-t-996494205/",
   email: "ttalmy@gmail.com",
   decks: { hypotension: "slides/slide1.pdf", analgesia: "slides/slide2.pdf" }
@@ -105,16 +86,6 @@ const CONFIG = {
 document.getElementById("linkedin").href = CONFIG.linkedin;
 document.getElementById("email").textContent = CONFIG.email;
 
-function qrSvg(el){
-  if(typeof qrcode!=="function"){el.textContent=CONFIG.pageUrl;return}
-  const q=qrcode(0,"M");q.addData(CONFIG.pageUrl);q.make();
-  el.innerHTML=q.createSvgTag({cellSize:8,margin:0,scalable:true});
-  const p=el.querySelector("path");if(p)p.setAttribute("fill","#17233F");
-}
-qrSvg(document.getElementById("qr-small"));
-const stage=document.getElementById("stage");
-document.getElementById("present").addEventListener("click",()=>{qrSvg(document.getElementById("qr-big"));stage.hidden=false;try{stage.requestFullscreen&&stage.requestFullscreen().catch(()=>{})}catch(e){}});
-stage.addEventListener("click",()=>{stage.hidden=true;try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}});
 
 document.getElementById("copy").addEventListener("click",e=>{
   const b=e.currentTarget,el=document.getElementById("email");

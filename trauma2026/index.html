@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ED or OR? Talk Slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one navy column like the slides; two talk cards, then contact */
+:root{
+  --bg:#17233F; --panel:#22315A; --line:#34466F; --fg:#FBFBF8; --muted:#C9D3E6; --dim:#8C9AB8; --accent:#E0B39E; --ok:#79C8A0;
+  --display:'Raleway','Segoe UI',Arial,sans-serif; --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--display);font-size:17px;line-height:1.55;font-variant-numeric:lining-nums}
+.wrap{max-width:1000px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.hero{padding-block:64px 32px;display:flex;flex-direction:column;gap:14px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-weight:800;font-size:clamp(34px,6vw,58px);line-height:1.05;margin:0;text-wrap:balance}
+.who{font-size:18px;color:var(--muted);margin:0;max-width:62ch}
+.who b{color:var(--fg);font-weight:700}
+.talks{display:grid;grid-template-columns:1fr;gap:22px;padding-block:32px}
+.talk{background:var(--panel);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.tag{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.talk h2{font-weight:800;font-size:26px;line-height:1.2;margin:0;text-wrap:balance;flex:1}
+.deck{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{appearance:none;border:0;cursor:pointer;font:700 15px var(--display);padding:12px 18px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.btn.primary{background:var(--accent);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn[aria-disabled="true"],.btn[disabled]{opacity:.5;cursor:default;pointer-events:none}
+.status{font-size:14px;color:var(--dim)}
+.status.ready{color:var(--ok)}
+.contact{display:grid;grid-template-columns:1fr;gap:28px;align-items:center;padding-block:32px 48px;border-top:1px solid var(--line)}
+.contact h3{font-weight:800;font-size:24px;margin:0 0 16px}
+.links{display:flex;flex-wrap:wrap;gap:10px}
+.mail{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px;font-family:var(--mono);font-size:15px}
+.mail code{user-select:all;background:var(--panel);padding:8px 12px;border-radius:10px}
+footer{font-size:13px;color:var(--dim);padding-block:0 32px}
+[hidden]{display:none!important}
+@media (max-width:640px){.contact{grid-template-columns:1fr}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Israeli Society of Emergency Surgery and Trauma · 17 December 2026 · Herzliya</div>
+    <p class="who"><b>Tomer Talmy, MD, MBA</b> · Division of Anesthesia, Intensive Care and Pain, Tel Aviv Sourasky University Medical Center</p>
+  </header>
+
+  <main class="talks">
+    <article class="talk">
+      <div class="tag">Trauma and acute care airway</div>
+      <h2>ED or OR? Where to Intubate the Hemodynamically Unstable Patient</h2>
+      <div class="deck"><a class="btn primary" id="dl-talk" aria-disabled="true">Download slides (PDF)</a><span class="status" id="st-talk">Slides will be posted after the talk</span></div>
+    </article>
+  </main>
+
+  <section class="contact">
+    <div>
+      <h3>Contact information</h3>
+      <div class="links">
+        <a class="btn primary" id="linkedin" target="_blank" rel="noopener">Connect on LinkedIn</a>
+      </div>
+      <div class="mail"><code id="email"></code><button class="btn ghost" id="copy" type="button">Copy email</button></div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ===== Edit these ===== */
+const CONFIG = {
+  linkedin: "https://www.linkedin.com/in/tomer-t-996494205/",
+  email: "ttalmy@gmail.com",
+  decks: { talk: "slides/slide1.pdf" }
+};
+/* ====================== */
+document.getElementById("linkedin").href = CONFIG.linkedin;
+document.getElementById("email").textContent = CONFIG.email;
+
+
+document.getElementById("copy").addEventListener("click",e=>{
+  const b=e.currentTarget,el=document.getElementById("email");
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Selected"};
+  try{navigator.clipboard.writeText(CONFIG.email).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy email",1800)},sel)}catch(err){sel()}
+});
+
+/* A download button switches on once its PDF exists */
+for(const [k,path] of Object.entries(CONFIG.decks)){
+  const a=document.getElementById("dl-"+k),st=document.getElementById("st-"+k);
+  fetch(path,{method:"HEAD"}).then(r=>{
+    if(!r.ok)return;
+    a.removeAttribute("aria-disabled");st.textContent="Final slides available";st.classList.add("ready");
+    a.href=path;a.setAttribute("download","");
+  }).catch(()=>{});
+}
+</script>
+</body>
+</html>
